@@ -1,0 +1,19 @@
+{
+	"debug": true,
+	"log":{
+		
+	},
+	"environment":{
+		"locale": 	"sv_SE",
+		"charset": 	"UTF-8",
+		"timezone": "Europe/Stockholm"
+	},
+	"database":{
+		"hostname": 	"localhost", 
+		"username": 	"root", 
+		"password": 	"", 
+		"database":		"pf",
+		"charset": 		"utf8",
+		"port": 		3306 
+	}
+}
