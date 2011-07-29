@@ -2,20 +2,23 @@
 
 class Session extends Model
 {	
-	private static $instance = null;
-	protected $userSession;
-
+	/** @var int TTL (TimeToLive), how long to keep a session alive. */
 	const TTL = 7200;
 	
+	/** @var Session The singleton instance. */
+	private static $instance = null;
+	
+	protected $userSession;
+	
 	/**
-	*	@param $variables is an array that consists of the database fields: ID, sessionID, ipAddress, createdAt, lastUpdatedAt
+	* @param array $dbAttributes The database attributes: ID, sessionID, ipAddress, createdAt, lastUpdatedAt
 	*/
-	public function __construct($variables) {
-		parent::__construct($variables);
+	public function __construct($dbAttributes) {
+		parent::__construct($dbAttributes);
 	}
 	
 	/**
-	 * 
+	 * @todo Document when to use and when not to use this function.
 	 */
 	private function updateSession() {
 		session_regenerate_id();
@@ -32,12 +35,18 @@ class Session extends Model
 	}
 	
 	public function getUser() {
-		if (self::loggedIn()) {
+		if ($this->loggedIn()) {
 			return $this->getUserSession()->getUser();
 		}
 		return null;
 	}
 	
+	/**
+	 * @return bool True if user logged in (Session has UserSession), otherwise false.
+	 */
+	public function isLoggedIn() {
+		return $this->getUserSession() != null;
+	}
 	
 	/**
 	 * @param String $ipAddress The visitors IP address
@@ -58,7 +67,7 @@ class Session extends Model
 		// If we found a corresponding session in the database.
 		if ($tempSession != null) {
 			self::$instance = $tempSession[0];
-			// If the session still is viable. (Not longer than <TTL seconds> since last update.)
+			// If the session still is viable. (Not longer than <TTL> seconds since last update.)
 			if(time()-self::$instance->lastUpdatedAt > self::TTL) {
 				self::create($ipAddress);
 				$retval = true;
@@ -74,15 +83,12 @@ class Session extends Model
 	}
 	
 	/**
-	 * 
+	 * @return Session The singleton instance.
 	 */
 	public static function get() {
 		return self::$instance;
 	}
-	
-	public static function loggedIn() {
-		return $this->getUserSession() != null;
-	}
+
 	/**
 	* Do not use!
 	*/
