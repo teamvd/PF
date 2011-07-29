@@ -5,12 +5,12 @@ class UserSession extends Model{
 	protected $session;
 	
 	/**
-	 * @param $variables is an array that consists of the database fields: ID, sessionID, userID, createdAt, lastUpdatedAt
+	 * @param array $dbAttributes The database attributes: ID, sessionID, userID, createdAt, lastUpdatedAt
 	 */	
-	public __construct($variables) {
-		parent::__construct($variables);
+	public __construct($dbAttributes) {
+		parent::__construct($dbAttributes);
 	}
-
+	
 	public function getSession() {
 		if (!isset($this->session)) {
 			$this->session = Session::findByID($this->sessionID);
