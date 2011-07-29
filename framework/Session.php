@@ -1,5 +1,12 @@
 <?php
 
+/**
+* @property int $ID
+* @property int $sessionID The PHP session ID.
+* @property string $ipAddress The visitors IP address.
+* @property int $createdAt
+* @property int $lastUpdatedAt
+*/
 class Session extends Model
 {	
 	/** @var int TTL (TimeToLive), how long to keep a session alive. */
@@ -8,10 +15,11 @@ class Session extends Model
 	/** @var Session The singleton instance. */
 	private static $instance = null;
 	
+	/** @var UserSession */
 	protected $userSession;
 	
 	/**
-	* @param array $dbAttributes The database attributes: ID, sessionID, ipAddress, createdAt, lastUpdatedAt
+	* @param array $dbAttributes The database attributes, see @property in class definition.
 	*/
 	public function __construct($dbAttributes) {
 		parent::__construct($dbAttributes);
@@ -27,6 +35,9 @@ class Session extends Model
 		$this->saveToDatabase();
  	}
 	
+	/**
+	* @return UserSession
+	*/
 	public function getUserSession(){
 		if (!isset($this->userSession)) {
 			$this->userSession = UserSession::find(array("conditions" => "sessionID=" . $this->ID));
@@ -34,6 +45,9 @@ class Session extends Model
 		return $this->userSession;
 	}
 	
+	/**
+	* @return User
+	*/
 	public function getUser() {
 		if ($this->loggedIn()) {
 			return $this->getUserSession()->getUser();
@@ -49,7 +63,7 @@ class Session extends Model
 	}
 	
 	/**
-	 * @param String $ipAddress The visitors IP address
+	 * @param string $ipAddress The visitors IP address
 	 */
 	public static function create($ipAddress) {
 		session_regenerate_id();
@@ -90,8 +104,9 @@ class Session extends Model
 	}
 
 	/**
-	* Do not use!
-	*/
+	 * Do not use!
+	 * @todo Document/rewrite so it's correctly implemented/used.
+	 */
 	/*
 	public static function destroy() {
 		self::$instance = null;
